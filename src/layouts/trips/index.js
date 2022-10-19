@@ -22,28 +22,45 @@ function Trips() {
     { Header: "options", accessor: "options", align: "center" },
   ];
   const [rows, setRows] = useState([]);
+  const [tableRows, setTableRows] = useState([]) 
+  const deleteTrip = async (id) => {
+      if (window.confirm('Are you sure you want to delete this trip?')) {
+        const deleted = await fetch('http://localhost:3000/trips/' + id, {
+          method: 'DELETE'
+        })
+        const result = await deleted.json()
+        const remainedRows = rows.filter((trip) => {
+          return trip.id != id
+        })
+        setRows(remainedRows)
+        alert(result.messages.join(' '))
+      }
+      
+  }
+  useEffect(() => {
+    const jsxRows = rows?.map((trip) => {
+      return {
+        id: <>{trip.id}</>,
+        title: <>{trip.title}</>,
+        cost: <>{trip.cost}</>,
+        date: <>{trip.date}</>,
+        options: <>
+          <MDButton variant="text" color="error" onClick={() => {deleteTrip(trip.id)}}>
+              <Icon>delete</Icon>&nbsp;delete
+          </MDButton>
+          <MDButton variant="text" color="dark">
+              <Icon>edit</Icon>&nbsp;edit
+          </MDButton>
+        </>
+      };
+    });
+    setTableRows(jsxRows);
+  }, [rows])
   useEffect(() => {
     async function getTrips() {
       const data = await fetch("http://localhost:3000/trips");
       const trips = await data.json()
-      console.log(trips)
-      const tableRows = trips?.data?.map((trip) => {
-        return {
-          id: <>{trip.id}</>,
-          title: <>{trip.title}</>,
-          cost: <>{trip.cost}</>,
-          date: <>{trip.date}</>,
-          options: <>
-            <MDButton variant="text" color="error">
-                <Icon>delete</Icon>&nbsp;delete
-            </MDButton>
-            <MDButton variant="text" color="dark">
-                <Icon>edit</Icon>&nbsp;edit
-            </MDButton>
-          </>
-        };
-      });
-      setRows(tableRows);
+      setRows(trips.data)
     }
     getTrips();
   }, []);
@@ -70,7 +87,10 @@ function Trips() {
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns, rows }}
+                  table={{
+                    columns,
+                    rows: tableRows
+                  }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
