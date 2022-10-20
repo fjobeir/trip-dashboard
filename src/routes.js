@@ -49,6 +49,7 @@ import Trips from "layouts/trips";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import AddTrip from "layouts/trips/AddTrip";
+import EditTrip from "layouts/trips/EditTrip";
 
 const routes = [
   {
@@ -76,6 +77,14 @@ const routes = [
     icon: <Icon fontSize="small">forest</Icon>,
     route: "/trips/add",
     component: <AddTrip />,
+    sidenav: false,
+  },
+  {
+    type: "collapse",
+    key: "add-trip",
+    // icon: <Icon fontSize="small">forest</Icon>,
+    route: "/trips/:id",
+    component: <EditTrip />,
     sidenav: false,
   },
   {

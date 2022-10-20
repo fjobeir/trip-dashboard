@@ -27,17 +27,16 @@ function Trips() {
   const [tableRows, setTableRows] = useState([])
   const deleteTrip = async (id) => {
     if (window.confirm('Are you sure you want to delete this trip?')) {
-      const deleted = await fetch('http://localhost:3000/trips/' + id, {
+      const deleted = await fetch(`${process.env.REACT_APP_API_URL}/trips/${id}`, {
         method: 'DELETE'
       })
       const result = await deleted.json()
       const remainedRows = rows.filter((trip) => {
-        return trip.id != id
+        return trip.id !== id
       })
       setRows(remainedRows)
       alert(result.messages.join(' '))
     }
-
   }
   useEffect(() => {
     const jsxRows = rows?.map((trip) => {
@@ -50,9 +49,11 @@ function Trips() {
           <MDButton variant="text" color="error" onClick={() => { deleteTrip(trip.id) }}>
             <Icon>delete</Icon>&nbsp;delete
           </MDButton>
-          <MDButton variant="text" color="dark">
-            <Icon>edit</Icon>&nbsp;edit
-          </MDButton>
+          <Link to={`/trips/${trip.id}`}>
+            <MDButton variant="text" color="dark">
+              <Icon>edit</Icon>&nbsp;edit
+            </MDButton>
+          </Link>
         </>
       };
     });
@@ -60,7 +61,7 @@ function Trips() {
   }, [rows])
   useEffect(() => {
     async function getTrips() {
-      const data = await fetch("http://localhost:3000/trips");
+      const data = await fetch(`${process.env.REACT_APP_API_URL}/trips/`);
       const trips = await data.json()
       setRows(trips.data)
     }
